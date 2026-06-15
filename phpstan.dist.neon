@@ -4,3 +4,5 @@ parameters:
         - src
     excludePaths:
         - src/Kernel.php
+    doctrine:
+        allowNullablePropertyForRequiredField: true
