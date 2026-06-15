@@ -9,3 +9,10 @@ services:
     ports:
       - "5672"
       - "15672"
+
+  ###> symfony/mailer ###
+  mailpit:
+    ports:
+      - "1025:1025"
+      - "8025:8025"
+  ###< symfony/mailer ###
