@@ -1,0 +1,42 @@
+{% extends 'layout/auth.html.twig' %}
+
+{% block title %}Mot de passe oublié · OmniSync{% endblock %}
+
+{% block auth_content %}
+    <div class="flex min-h-screen">
+        {% include 'layout/_brand_panel.html.twig' %}
+
+        <div class="flex w-full flex-col justify-center px-6 py-12 lg:w-3/5 lg:px-16">
+            <div class="mx-auto w-full max-w-xl">
+                {% include 'layout/_brand_logo_mobile.html.twig' %}
+
+                <h1 class="text-3xl font-bold text-gray-900">Mot de passe oublié</h1>
+                <p class="mt-2 text-base text-gray-500">Saisissez votre adresse e-mail, nous vous enverrons un lien de réinitialisation.</p>
+
+                {% for flash_error in app.flashes('reset_password_error') %}
+                    <div class="mt-8 rounded-lg bg-red-50 px-4 py-3 text-sm text-red-700">{{ flash_error }}</div>
+                {% endfor %}
+
+                {{ form_start(requestForm, {attr: {class: 'mt-8 space-y-5'}}) }}
+                    <div>
+                        <label for="{{ requestForm.email.vars.id }}" class="mb-1.5 block text-sm font-medium text-gray-700">Adresse e-mail</label>
+                        {{ form_widget(requestForm.email, {attr: {
+                            class: 'block w-full rounded-lg border border-gray-300 px-4 py-3 text-base text-gray-900 placeholder-gray-400 focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand',
+                            placeholder: 'vous@entreprise.com',
+                        }}) }}
+                        <div class="mt-1 text-sm text-red-600">{{ form_errors(requestForm.email) }}</div>
+                    </div>
+
+                    <button type="submit"
+                            class="mt-2 w-full cursor-pointer rounded-lg bg-brand px-4 py-3 text-base font-semibold text-white transition hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-brand focus:ring-offset-2">
+                        Envoyer le lien de réinitialisation
+                    </button>
+                {{ form_end(requestForm) }}
+
+                <p class="mt-6 text-sm text-gray-500">
+                    <a href="{{ path('app_login') }}" class="font-medium text-brand hover:underline">← Retour à la connexion</a>
+                </p>
+            </div>
+        </div>
+    </div>
+{% endblock %}

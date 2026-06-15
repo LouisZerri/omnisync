@@ -1,2 +1,7 @@
 @import "tailwindcss";
 @source not "../../public";
+
+@theme {
+    --color-brand: #26215c;
+    --color-brand-light: #afa9ec;
+}
