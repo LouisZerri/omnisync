@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Service\Import;
 
 use App\Entity\Product;
+use App\EventSubscriber\ProductSyncSubscriber;
 use App\Repository\ProductRepository;
 use Doctrine\Bundle\DoctrineBundle\Middleware\BacktraceDebugDataHolder;
 use Doctrine\ORM\EntityManagerInterface;
@@ -33,6 +34,7 @@ class ProductCsvImporter
         private readonly EntityManagerInterface $entityManager,
         private readonly ProductRepository $productRepository,
         private readonly ValidatorInterface $validator,
+        private readonly ProductSyncSubscriber $syncSubscriber,
     ) {
     }
 
@@ -42,6 +44,19 @@ class ProductCsvImporter
     }
 
     public function import(string $filePath): ImportResult
+    {
+        // L'import en masse ne déclenche pas l'auto-synchro produit par produit
+        // (sinon le broker serait inondé) ; on la suspend le temps de l'import.
+        $this->syncSubscriber->disable();
+
+        try {
+            return $this->doImport($filePath);
+        } finally {
+            $this->syncSubscriber->enable();
+        }
+    }
+
+    private function doImport(string $filePath): ImportResult
     {
         $result = new ImportResult();
 
