@@ -1,4 +1,5 @@
-# Enable stateless CSRF protection for forms and logins/logouts
+# CSRF stateless pour le login/logout (champs gérés en JS) ;
+# les formulaires applicatifs utilisent le CSRF stateful (basé session), plus robuste.
 framework:
     form:
         csrf_protection:
@@ -6,6 +7,5 @@ framework:
 
     csrf_protection:
         stateless_token_ids:
-            - submit
             - authenticate
             - logout
