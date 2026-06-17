@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Channel\Connector;
 
+use App\Channel\ChannelEndpointResolver;
 use App\Channel\Dto\ProductPayload;
 use App\Channel\Exception\ChannelException;
 use App\Entity\Channel;
@@ -20,6 +21,7 @@ class HttpChannelConnector implements ChannelConnector
 {
     public function __construct(
         private readonly HttpClientInterface $httpClient,
+        private readonly ChannelEndpointResolver $endpoints,
     ) {
     }
 
@@ -88,7 +90,7 @@ class HttpChannelConnector implements ChannelConnector
     private function request(Channel $channel, string $method, string $path, ?array $payload = null): ResponseInterface
     {
         $options = [
-            'headers' => ['X-Api-Key' => (string) $channel->getApiKey()],
+            'headers' => ['X-Api-Key' => $this->endpoints->apiKey($channel)],
             'timeout' => 10,
         ];
 
@@ -96,6 +98,6 @@ class HttpChannelConnector implements ChannelConnector
             $options['json'] = $payload;
         }
 
-        return $this->httpClient->request($method, rtrim((string) $channel->getBaseUrl(), '/').$path, $options);
+        return $this->httpClient->request($method, rtrim($this->endpoints->baseUrl($channel), '/').$path, $options);
     }
 }

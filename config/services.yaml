@@ -19,6 +19,11 @@ services:
     App\:
         resource: '../src/'
 
+    # Le resolver reçoit la table des endpoints de canaux (codes → URL/clé via env).
+    App\Channel\ChannelEndpointResolver:
+        arguments:
+            $channels: '%app.channels%'
+
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
 

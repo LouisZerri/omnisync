@@ -1,0 +1,14 @@
+# Configuration de connexion des canaux, indexée par le code du canal.
+# Les valeurs viennent des variables d'environnement (URL spécifique à l'environnement,
+# clé API = secret), jamais de la base de données.
+parameters:
+    app.channels:
+        voltura:
+            base_url: '%env(CHANNEL_VOLTURA_BASE_URL)%'
+            api_key: '%env(CHANNEL_VOLTURA_API_KEY)%'
+        cartelio:
+            base_url: '%env(CHANNEL_CARTELIO_BASE_URL)%'
+            api_key: '%env(CHANNEL_CARTELIO_API_KEY)%'
+        zelmark:
+            base_url: '%env(CHANNEL_ZELMARK_BASE_URL)%'
+            api_key: '%env(CHANNEL_ZELMARK_API_KEY)%'

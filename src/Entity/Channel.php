@@ -24,21 +24,14 @@ class Channel
     #[Assert\Length(max: 100, maxMessage: 'Le nom ne peut pas dépasser {{ limit }} caractères')]
     private ?string $name = null;
 
+    /**
+     * Identifiant machine stable du canal. Sert de clé pour résoudre sa configuration de
+     * connexion (URL, clé API), définie côté variables d'environnement et non en base.
+     */
     #[ORM\Column(length: 50)]
     #[Assert\NotBlank(message: 'Le code du canal est obligatoire')]
     #[Assert\Length(max: 50, maxMessage: 'Le code ne peut pas dépasser {{ limit }} caractères')]
     private ?string $code = null;
-
-    #[ORM\Column(length: 255)]
-    #[Assert\NotBlank(message: "L'URL de base du canal est obligatoire")]
-    #[Assert\Url(message: "L'URL de base doit être une URL valide")]
-    #[Assert\Length(max: 255, maxMessage: "L'URL ne peut pas dépasser {{ limit }} caractères")]
-    private ?string $baseUrl = null;
-
-    #[ORM\Column(length: 255)]
-    #[Assert\NotBlank(message: "La clé API du canal est obligatoire")]
-    #[Assert\Length(max: 255, maxMessage: 'La clé API ne peut pas dépasser {{ limit }} caractères')]
-    private ?string $apiKey = null;
 
     #[ORM\Column]
     private bool $isActive = true;
@@ -68,30 +61,6 @@ class Channel
     public function setCode(string $code): static
     {
         $this->code = $code;
-
-        return $this;
-    }
-
-    public function getBaseUrl(): ?string
-    {
-        return $this->baseUrl;
-    }
-
-    public function setBaseUrl(string $baseUrl): static
-    {
-        $this->baseUrl = $baseUrl;
-
-        return $this;
-    }
-
-    public function getApiKey(): ?string
-    {
-        return $this->apiKey;
-    }
-
-    public function setApiKey(string $apiKey): static
-    {
-        $this->apiKey = $apiKey;
 
         return $this;
     }

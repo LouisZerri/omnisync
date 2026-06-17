@@ -18,20 +18,18 @@ class ChannelFixtures extends Fixture implements FixtureGroupInterface
 
     public function load(ObjectManager $manager): void
     {
-        // Les 3 canaux pointent vers les instances du microservice marketplace (Docker).
-        // Les URLs/clés correspondent à la configuration de ces instances (voir compose).
+        // Identité métier des canaux uniquement. La config de connexion (URL, clé API)
+        // vit dans les variables d'environnement, résolue par le code du canal.
         $channelsData = [
-            ['Voltura', 'voltura', 'http://localhost:3001', 'voltura-dev-key'],
-            ['Cartelio', 'cartelio', 'http://localhost:3002', 'cartelio-dev-key'],
-            ['Zelmark', 'zelmark', 'http://localhost:3003', 'zelmark-dev-key'],
+            ['Voltura', 'voltura'],
+            ['Cartelio', 'cartelio'],
+            ['Zelmark', 'zelmark'],
         ];
 
-        foreach ($channelsData as [$name, $code, $baseUrl, $apiKey]) {
+        foreach ($channelsData as [$name, $code]) {
             $channel = new Channel();
             $channel->setName($name);
             $channel->setCode($code);
-            $channel->setBaseUrl($baseUrl);
-            $channel->setApiKey($apiKey);
             $channel->setIsActive(true);
 
             $manager->persist($channel);
