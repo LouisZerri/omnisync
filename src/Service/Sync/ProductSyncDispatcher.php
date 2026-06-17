@@ -5,13 +5,14 @@ declare(strict_types=1);
 namespace App\Service\Sync;
 
 use App\Entity\Product;
-use App\Message\SyncProductToChannel;
+use App\Message\SynchronizeProduct;
 use App\Repository\ChannelRepository;
 use Symfony\Component\Messenger\MessageBusInterface;
 
 /**
- * Publie la synchronisation d'un produit vers les canaux actifs (un message par canal).
- * Réutilisé par la commande CLI et par l'action « Synchroniser » du contrôleur.
+ * Déclenche la synchronisation d'un produit. Se contente de publier un message léger
+ * (aucune écriture en base) : il est donc sûr de l'appeler depuis un événement Doctrine.
+ * Le fan-out par canal + la création du journal sont faits par le worker.
  */
 class ProductSyncDispatcher
 {
@@ -22,16 +23,12 @@ class ProductSyncDispatcher
     }
 
     /**
-     * @return int nombre de canaux ciblés
+     * @return int nombre de canaux actifs qui seront ciblés
      */
     public function dispatch(Product $product): int
     {
-        $channels = $this->channelRepository->findBy(['isActive' => true]);
+        $this->bus->dispatch(new SynchronizeProduct((int) $product->getId()));
 
-        foreach ($channels as $channel) {
-            $this->bus->dispatch(new SyncProductToChannel((int) $product->getId(), (int) $channel->getId()));
-        }
-
-        return \count($channels);
+        return $this->channelRepository->count(['isActive' => true]);
     }
 }

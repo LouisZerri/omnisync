@@ -6,51 +6,64 @@ namespace App\MessageHandler;
 
 use App\Channel\Connector\ChannelConnector;
 use App\Channel\Dto\ProductPayload;
+use App\Channel\Exception\ChannelException;
 use App\Message\SyncProductToChannel;
-use App\Repository\ChannelRepository;
-use App\Repository\ProductRepository;
+use App\Repository\SynchronizationRepository;
+use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 use Symfony\Component\Messenger\Exception\UnrecoverableMessageHandlingException;
 
+/**
+ * Exécute une ligne de synchronisation : pousse le produit vers le canal et met à jour le
+ * statut du journal (en cours → terminé / échec). En cas d'échec, l'exception est relevée
+ * pour déclencher le retry Messenger.
+ */
 #[AsMessageHandler]
 final readonly class SyncProductToChannelHandler
 {
     public function __construct(
-        private ProductRepository $productRepository,
-        private ChannelRepository $channelRepository,
+        private SynchronizationRepository $synchronizationRepository,
         private ChannelConnector $connector,
+        private EntityManagerInterface $entityManager,
         private LoggerInterface $logger,
     ) {
     }
 
     public function __invoke(SyncProductToChannel $message): void
     {
-        $product = $this->productRepository->find($message->productId);
-        $channel = $this->channelRepository->find($message->channelId);
-
-        // Produit ou canal disparu depuis la publication : inutile de réessayer.
-        if (null === $product || null === $channel) {
-            throw new UnrecoverableMessageHandlingException(
-                sprintf('Produit #%d ou canal #%d introuvable.', $message->productId, $message->channelId),
-            );
+        $synchronization = $this->synchronizationRepository->find($message->synchronizationId);
+        if (null === $synchronization) {
+            throw new UnrecoverableMessageHandlingException(sprintf('Synchronisation #%d introuvable.', $message->synchronizationId));
         }
 
-        // Canal désactivé entre-temps : on ignore proprement, sans erreur.
+        $channel = $synchronization->getChannel();
+
+        // Canal désactivé depuis la mise en file : on n'envoie rien.
         if (!$channel->isActive()) {
-            $this->logger->info('Synchronisation ignorée (canal désactivé)', [
-                'product' => $product->getSku(),
-                'channel' => $channel->getCode(),
-            ]);
+            $synchronization->markFailed('Canal désactivé.');
+            $this->entityManager->flush();
 
             return;
         }
 
-        // pushProduct() lève une ChannelException en cas d'échec → déclenche le retry Messenger.
-        $this->connector->pushProduct($channel, ProductPayload::fromProduct($product));
+        $synchronization->markRunning();
+        $this->entityManager->flush();
+
+        try {
+            $this->connector->pushProduct($channel, ProductPayload::fromProduct($synchronization->getProduct()));
+        } catch (ChannelException $e) {
+            $synchronization->markFailed($e->getMessage());
+            $this->entityManager->flush();
+
+            throw $e;
+        }
+
+        $synchronization->markDone();
+        $this->entityManager->flush();
 
         $this->logger->info('Produit synchronisé', [
-            'product' => $product->getSku(),
+            'product' => $synchronization->getProduct()->getSku(),
             'channel' => $channel->getCode(),
         ]);
     }

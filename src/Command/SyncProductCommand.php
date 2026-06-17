@@ -49,9 +49,9 @@ class SyncProductCommand extends Command
         $channelCount = $this->dispatcher->dispatch($product);
 
         $io->success(sprintf(
-            '%d message(s) de synchronisation publié(s) pour « %s ».',
-            $channelCount,
+            'Synchronisation de « %s » planifiée vers %d canal/canaux.',
             (string) $product->getSku(),
+            $channelCount,
         ));
 
         return Command::SUCCESS;
