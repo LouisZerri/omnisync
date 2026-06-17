@@ -38,6 +38,39 @@ services:
       MP_SMTP_AUTH_ALLOW_INSECURE: 1
   ###< symfony/mailer ###
 
+  # --- Canaux marketplace : une seule image, 3 instances aux personnalités distinctes ---
+  voltura:
+    build: ./marketplace-service
+    image: omnisync/marketplace
+    environment:
+      CHANNEL_NAME: Voltura
+      API_KEY: voltura-dev-key
+      LATENCY_MS: 50
+      ERROR_RATE: 0
+      STRICT_VALIDATION: "false"
+      RATE_LIMIT: 0
+
+  cartelio:
+    image: omnisync/marketplace
+    environment:
+      CHANNEL_NAME: Cartelio
+      API_KEY: cartelio-dev-key
+      LATENCY_MS: 2000
+      ERROR_RATE: 0.05
+      STRICT_VALIDATION: "false"
+      RATE_LIMIT: 0
+
+  zelmark:
+    image: omnisync/marketplace
+    environment:
+      CHANNEL_NAME: Zelmark
+      API_KEY: zelmark-dev-key
+      LATENCY_MS: 300
+      ERROR_RATE: 0.2
+      STRICT_VALIDATION: "true"
+      RATE_LIMIT: 5
+      RATE_WINDOW_MS: 10000
+
 volumes:
   ###> doctrine/doctrine-bundle ###
   database_data:

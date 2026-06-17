@@ -1,0 +1,13 @@
+{
+    "name": "omnisync-marketplace-service",
+    "version": "1.0.0",
+    "description": "Microservice marketplace générique simulé pour OmniSync (lancé en 3 instances : Voltura, Cartelio, Zelmark)",
+    "private": true,
+    "main": "server.js",
+    "scripts": {
+        "start": "node server.js"
+    },
+    "dependencies": {
+        "express": "^4.21.2"
+    }
+}

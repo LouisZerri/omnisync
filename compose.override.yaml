@@ -16,3 +16,14 @@ services:
       - "1025:1025"
       - "8025:8025"
   ###< symfony/mailer ###
+
+  # Canaux marketplace exposés en local
+  voltura:
+    ports:
+      - "3001:3000"
+  cartelio:
+    ports:
+      - "3002:3000"
+  zelmark:
+    ports:
+      - "3003:3000"
