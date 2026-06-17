@@ -1,0 +1,10 @@
+{% extends 'layout/app.html.twig' %}
+
+{% block title %}Nouveau produit · OmniSync{% endblock %}
+{% block page_title %}Nouveau produit{% endblock %}
+
+{% block app_content %}
+    <div class="max-w-2xl rounded-xl border border-gray-200 bg-white p-8">
+        {{ include('product/_form.html.twig', {submit_label: 'Créer le produit'}) }}
+    </div>
+{% endblock %}

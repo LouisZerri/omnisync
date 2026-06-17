@@ -11,7 +11,6 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 class UserFixtures extends Fixture
 {
-    // Rôle métier propre à OmniSync, en plus de ROLE_USER fourni par défaut.
     private const string ROLE_MANAGER = 'ROLE_MANAGER';
 
     public function __construct(
@@ -33,7 +32,6 @@ class UserFixtures extends Fixture
             $user->setName($name);
             $user->setRoles($roles);
             $user->setIsActive($isActive);
-            // Mot de passe identique pour tous en dev uniquement, jamais en production.
             $user->setPassword($this->passwordHasher->hashPassword($user, 'password'));
 
             $manager->persist($user);

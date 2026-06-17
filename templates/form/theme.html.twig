@@ -1,0 +1,9 @@
+{% block form_errors -%}
+    {%- if errors|length > 0 -%}
+        <ul class="mt-1 space-y-0.5">
+            {%- for error in errors -%}
+                <li class="text-xs text-red-600">{{ error.message }}</li>
+            {%- endfor -%}
+        </ul>
+    {%- endif -%}
+{%- endblock form_errors %}

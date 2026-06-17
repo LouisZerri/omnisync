@@ -1,0 +1,77 @@
+{# Macro : classes d'un input texte, bordure rouge si le champ est en erreur #}
+{% macro input_class(field) %}
+    {{- 'block w-full rounded-lg border px-3 py-2 text-sm focus:outline-none focus:ring-1 ' ~ (field.vars.valid ? 'border-gray-300 focus:border-brand focus:ring-brand' : 'border-red-500 focus:border-red-500 focus:ring-red-500') -}}
+{% endmacro %}
+
+{% import _self as form_macros %}
+
+{{ form_start(form) }}
+<div class="space-y-5">
+    <div>
+        {{ form_label(form.name, null, {'label_attr': {'class': 'mb-1.5 block text-sm font-medium text-gray-700'}}) }}
+        {{ form_widget(form.name, {'attr': {'class': form_macros.input_class(form.name)}}) }}
+        {{ form_errors(form.name) }}
+    </div>
+
+    <div>
+        {{ form_label(form.sku, null, {'label_attr': {'class': 'mb-1.5 block text-sm font-medium text-gray-700'}}) }}
+        {{ form_widget(form.sku, {'attr': {'class': form_macros.input_class(form.sku)}}) }}
+        {{ form_errors(form.sku) }}
+    </div>
+
+    <div>
+        {{ form_label(form.description, null, {'label_attr': {'class': 'mb-1.5 block text-sm font-medium text-gray-700'}}) }}
+        {{ form_widget(form.description, {'attr': {'class': form_macros.input_class(form.description)}}) }}
+        {{ form_errors(form.description) }}
+    </div>
+
+    <div class="grid grid-cols-2 gap-4">
+        <div>
+            {{ form_label(form.priceCents, null, {'label_attr': {'class': 'mb-1.5 block text-sm font-medium text-gray-700'}}) }}
+            <div class="relative">
+                {{ form_widget(form.priceCents, {'attr': {'class': form_macros.input_class(form.priceCents) ~ ' pr-8'}}) }}
+                <span class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-sm text-gray-500">€</span>
+            </div>
+            {{ form_errors(form.priceCents) }}
+        </div>
+        <div>
+            {{ form_label(form.stock, null, {'label_attr': {'class': 'mb-1.5 block text-sm font-medium text-gray-700'}}) }}
+            {{ form_widget(form.stock, {'attr': {'class': form_macros.input_class(form.stock)}}) }}
+            {{ form_errors(form.stock) }}
+        </div>
+    </div>
+    
+    <div data-controller="image-preview lightbox">
+        {{ form_label(form.imageFile, null, {'label_attr': {'class': 'mb-1.5 block text-sm font-medium text-gray-700'}}) }}
+        {% set current_image = form.imageFile.vars.image_uri|default(false) %}
+        <div class="flex items-start gap-4">
+            <div class="flex h-24 w-24 shrink-0 items-center justify-center overflow-hidden rounded-lg border border-gray-200 bg-gray-50">
+                <img data-image-preview-target="image" data-action="click->lightbox#open" src="{{ current_image ?: '' }}" alt="" class="h-full w-full cursor-zoom-in object-cover {{ current_image ? '' : 'hidden' }}">
+                <svg data-image-preview-target="placeholder" class="h-8 w-8 text-gray-300 {{ current_image ? 'hidden' : '' }}" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5zm10.5-11.25h.008v.008h-.008V8.25zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" /></svg>
+            </div>
+            <div class="flex-1">
+                {{ form_widget(form.imageFile.file, {'attr': {
+                    'class': 'block w-full text-sm text-gray-500 file:mr-4 file:cursor-pointer file:rounded-lg file:border-0 file:bg-brand file:px-4 file:py-2 file:text-sm file:font-medium file:text-white hover:file:opacity-90',
+                    'data-image-preview-target': 'input',
+                    'data-action': 'change->image-preview#preview',
+                }}) }}
+                <p class="mt-1.5 text-xs text-gray-400">JPG, PNG ou WebP — 2 Mo max.</p>
+                {% if form.imageFile.delete is defined %}
+                    <label class="mt-3 flex items-center gap-2 text-sm text-gray-600">
+                        {{ form_widget(form.imageFile.delete) }}
+                        Supprimer l'image actuelle
+                    </label>
+                {% endif %}
+            </div>
+        </div>
+        {{ form_errors(form.imageFile) }}
+    </div>
+</div>
+
+<div class="mt-6 flex items-center gap-4">
+    <button type="submit" class="rounded-lg bg-brand px-4 py-2 text-sm font-medium text-white transition hover:opacity-90 cursor-pointer">
+        {{ submit_label }}
+    </button>
+    <a href="{{ path('app_product_index') }}" class="text-sm font-medium text-gray-500 transition hover:text-gray-900">Annuler</a>
+</div>
+{{ form_end(form) }}
