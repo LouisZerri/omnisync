@@ -40,7 +40,7 @@
             {{ form_errors(form.stock) }}
         </div>
     </div>
-    
+
     <div data-controller="image-preview lightbox">
         {{ form_label(form.imageFile, null, {'label_attr': {'class': 'mb-1.5 block text-sm font-medium text-gray-700'}}) }}
         {% set current_image = form.imageFile.vars.image_uri|default(false) %}

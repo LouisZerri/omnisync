@@ -6,9 +6,14 @@
 {% block app_content %}
     <div class="mb-6 flex items-center justify-between">
         <p class="text-sm text-gray-500">{{ pagination.getTotalItemCount }} produit(s) au catalogue</p>
-        <a href="{{ path('app_product_new') }}" class="rounded-lg bg-brand px-4 py-2 text-sm font-medium text-white transition hover:opacity-90">
-            Nouveau produit
-        </a>
+        <div class="flex items-center gap-3">
+            <a href="{{ path('app_product_import') }}" class="rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-50">
+                Importer un CSV
+            </a>
+            <a href="{{ path('app_product_new') }}" class="rounded-lg bg-brand px-4 py-2 text-sm font-medium text-white transition hover:opacity-90">
+                Nouveau produit
+            </a>
+        </div>
     </div>
 
     <div class="overflow-hidden rounded-xl border border-gray-200 bg-white" data-controller="lightbox">

@@ -5,8 +5,10 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use App\Entity\Product;
+use App\Form\CsvImportType;
 use App\Form\ProductType;
 use App\Repository\ProductRepository;
+use App\Service\Import\ProductCsvImporter;
 use Doctrine\ORM\EntityManagerInterface;
 use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -88,5 +90,31 @@ class ProductController extends AbstractController
         }
 
         return $this->redirectToRoute('app_product_index');
+    }
+
+    #[Route('/importer', name: 'import', methods: ['GET', 'POST'])]
+    public function import(Request $request, ProductCsvImporter $importer): Response
+    {
+        $form = $this->createForm(CsvImportType::class);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            /** @var \Symfony\Component\HttpFoundation\File\UploadedFile $file */
+            $file = $form->get('file')->getData();
+
+            // Marge mémoire pour les gros imports (en prod : pas de profiler, donc largement suffisant).
+            // Pour de très gros fichiers, préférer la commande « app:products:import ».
+            ini_set('memory_limit', '512M');
+
+            $result = $importer->import($file->getPathname());
+
+            return $this->render('product/import_result.html.twig', [
+                'result' => $result,
+            ]);
+        }
+
+        return $this->render('product/import.html.twig', [
+            'form' => $form,
+        ]);
     }
 }

@@ -4,6 +4,7 @@ import PasswordStrengthController from './controllers/password_strength_controll
 import ImagePreviewController from './controllers/image_preview_controller.js';
 import ConfirmController from './controllers/confirm_controller.js';
 import LightboxController from './controllers/lightbox_controller.js';
+import FileInputController from './controllers/file_input_controller.js';
 
 // Active la protection CSRF stateless de Symfony (écouteurs globaux sur submit).
 import './controllers/csrf_protection_controller.js';
@@ -14,3 +15,4 @@ app.register('password-strength', PasswordStrengthController);
 app.register('image-preview', ImagePreviewController);
 app.register('confirm', ConfirmController);
 app.register('lightbox', LightboxController);
+app.register('file-input', FileInputController);

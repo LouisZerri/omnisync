@@ -21,3 +21,13 @@ services:
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
+
+# En dev, on fournit à l'importer le collecteur de requêtes Doctrine pour qu'il le
+# vide à chaque lot (évite la saturation mémoire du profiler sur les gros imports).
+when@dev:
+    services:
+        App\Service\Import\ProductCsvImporter:
+            autowire: true
+            autoconfigure: true
+            calls:
+                - setDebugDataHolder: ['@doctrine.debug_data_holder']
