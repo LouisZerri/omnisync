@@ -49,6 +49,13 @@ class Synchronization
         $this->updatedAt = $this->createdAt;
     }
 
+    public function markPending(): void
+    {
+        $this->status = SyncStatus::Pending;
+        $this->error = null;
+        $this->touch();
+    }
+
     public function markRunning(): void
     {
         $this->status = SyncStatus::Running;

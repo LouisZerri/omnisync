@@ -7,6 +7,7 @@ namespace App\Controller;
 use App\Entity\Synchronization;
 use App\Message\SyncProductToChannel;
 use App\Repository\SynchronizationRepository;
+use Doctrine\ORM\EntityManagerInterface;
 use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -37,9 +38,17 @@ class SynchronizationController extends AbstractController
     }
 
     #[Route('/{id}/relancer', name: 'retry', methods: ['POST'])]
-    public function retry(Request $request, Synchronization $synchronization, MessageBusInterface $bus): Response
-    {
+    public function retry(
+        Request $request,
+        Synchronization $synchronization,
+        EntityManagerInterface $entityManager,
+        MessageBusInterface $bus,
+    ): Response {
         if ($this->isCsrfTokenValid('retry_sync_'.$synchronization->getId(), $request->getPayload()->getString('_token'))) {
+            // Remise en file immédiate, pour un retour visuel clair en attendant le worker.
+            $synchronization->markPending();
+            $entityManager->flush();
+
             $bus->dispatch(new SyncProductToChannel((int) $synchronization->getId()));
 
             $this->addFlash('success', 'Synchronisation relancée.');
