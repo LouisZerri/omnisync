@@ -5,7 +5,6 @@ import ImagePreviewController from './controllers/image_preview_controller.js';
 import ConfirmController from './controllers/confirm_controller.js';
 import LightboxController from './controllers/lightbox_controller.js';
 import FileInputController from './controllers/file_input_controller.js';
-import ChannelTestController from './controllers/channel_test_controller.js';
 
 // Active la protection CSRF stateless de Symfony (écouteurs globaux sur submit).
 import './controllers/csrf_protection_controller.js';
@@ -17,4 +16,3 @@ app.register('image-preview', ImagePreviewController);
 app.register('confirm', ConfirmController);
 app.register('lightbox', LightboxController);
 app.register('file-input', FileInputController);
-app.register('channel-test', ChannelTestController);

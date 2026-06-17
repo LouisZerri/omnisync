@@ -7,8 +7,9 @@ namespace App\Controller;
 use App\Channel\Connector\ChannelConnector;
 use App\Entity\Channel;
 use App\Repository\ChannelRepository;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
@@ -18,16 +19,36 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 class ChannelController extends AbstractController
 {
     #[Route('', name: 'index', methods: ['GET'])]
-    public function index(ChannelRepository $channels): Response
+    public function index(ChannelRepository $channels, ChannelConnector $connector): Response
     {
+        $channelList = $channels->findBy([], ['name' => 'ASC']);
+
+        // Santé testée au rendu : pastille « en ligne / hors ligne » par canal.
+        $health = [];
+        foreach ($channelList as $channel) {
+            $health[$channel->getId()] = $connector->testConnection($channel);
+        }
+
         return $this->render('channel/index.html.twig', [
-            'channels' => $channels->findBy([], ['name' => 'ASC']),
+            'channels' => $channelList,
+            'health' => $health,
         ]);
     }
 
-    #[Route('/{id}/tester', name: 'test', methods: ['GET'])]
-    public function test(Channel $channel, ChannelConnector $connector): JsonResponse
+    #[Route('/{id}/basculer', name: 'toggle', methods: ['POST'])]
+    public function toggle(Request $request, Channel $channel, EntityManagerInterface $entityManager): Response
     {
-        return $this->json(['ok' => $connector->testConnection($channel)]);
+        if ($this->isCsrfTokenValid('toggle_channel_'.$channel->getId(), $request->getPayload()->getString('_token'))) {
+            $channel->setIsActive(!$channel->isActive());
+            $entityManager->flush();
+
+            $this->addFlash('success', sprintf(
+                'Le canal « %s » a été %s.',
+                (string) $channel->getName(),
+                $channel->isActive() ? 'activé' : 'désactivé',
+            ));
+        }
+
+        return $this->redirectToRoute('app_channel_index');
     }
 }
