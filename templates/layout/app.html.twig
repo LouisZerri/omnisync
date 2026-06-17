@@ -14,6 +14,9 @@
             <nav class="flex-1 space-y-1 px-3 py-4">
                 {{ _self.nav_item('app_home', 'Tableau de bord', app.request.attributes.get('_route') starts with 'app_home') }}
                 {{ _self.nav_item('app_product_index', 'Produits', app.request.attributes.get('_route') starts with 'app_product') }}
+                {% if is_granted('ROLE_ADMIN') %}
+                    {{ _self.nav_item('app_channel_index', 'Canaux', app.request.attributes.get('_route') starts with 'app_channel') }}
+                {% endif %}
             </nav>
         </aside>
 
