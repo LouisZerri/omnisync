@@ -30,6 +30,15 @@ app.get('/health', requireApiKey, (req, res) => {
     res.json({ status: 'ok', channel: config.channelName });
 });
 
+// Lecture d'une fiche (pour vérifier qu'un produit a bien été propagé vers le canal).
+app.get('/products/:sku', requireApiKey, (req, res) => {
+    const product = store.get(req.params.sku);
+    if (!product) {
+        return res.status(404).json({ error: 'Produit inconnu sur ce canal' });
+    }
+    res.json(product);
+});
+
 const channelMiddleware = [requireApiKey, rateLimit, simulatePersonality];
 
 // Push d'une fiche produit (création ou mise à jour par SKU).

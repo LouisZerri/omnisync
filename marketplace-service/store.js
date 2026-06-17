@@ -9,6 +9,10 @@ module.exports = {
         return products.has(sku);
     },
 
+    get(sku) {
+        return products.get(sku);
+    },
+
     // Crée ou remplace la fiche d'un SKU ; renvoie true si le produit existait déjà.
     upsert(product) {
         const existed = products.has(product.sku);
