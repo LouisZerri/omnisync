@@ -9,6 +9,7 @@ use App\Form\CsvImportType;
 use App\Form\ProductType;
 use App\Repository\ProductRepository;
 use App\Service\Import\ProductCsvImporter;
+use App\Service\Sync\ProductSyncDispatcher;
 use Doctrine\ORM\EntityManagerInterface;
 use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -87,6 +88,26 @@ class ProductController extends AbstractController
             $entityManager->flush();
 
             $this->addFlash('success', 'Le produit a été supprimé.');
+        }
+
+        return $this->redirectToRoute('app_product_index');
+    }
+
+    #[Route('/{id}/synchroniser', name: 'sync', methods: ['POST'])]
+    public function sync(Request $request, Product $product, ProductSyncDispatcher $dispatcher): Response
+    {
+        if ($this->isCsrfTokenValid('sync_product_'.$product->getId(), $request->getPayload()->getString('_token'))) {
+            $channelCount = $dispatcher->dispatch($product);
+
+            if ($channelCount > 0) {
+                $this->addFlash('success', sprintf(
+                    'Synchronisation de « %s » planifiée vers %d canal/canaux.',
+                    (string) $product->getName(),
+                    $channelCount,
+                ));
+            } else {
+                $this->addFlash('success', 'Aucun canal actif : rien à synchroniser.');
+            }
         }
 
         return $this->redirectToRoute('app_product_index');

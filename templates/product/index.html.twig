@@ -53,10 +53,14 @@
                     </td>
                     <td class="px-6 py-4">
                         <div class="flex items-center justify-end gap-3">
-                            <a href="{{ path('app_product_edit', {id: product.id}) }}" class="text-sm font-medium text-brand transition hover:underline">Modifier</a>
+                            <form method="post" action="{{ path('app_product_sync', {id: product.id}) }}">
+                                <input type="hidden" name="_token" value="{{ csrf_token('sync_product_' ~ product.id) }}">
+                                <button type="submit" class="cursor-pointer text-sm font-medium text-brand transition hover:underline">Synchroniser</button>
+                            </form>
+                            <a href="{{ path('app_product_edit', {id: product.id}) }}" class="text-sm font-medium text-gray-600 transition hover:underline">Modifier</a>
                             <form method="post" action="{{ path('app_product_delete', {id: product.id}) }}" data-controller="confirm" data-confirm-message-value="Supprimer le produit « {{ product.name }} » ?">
                                 <input type="hidden" name="_token" value="{{ csrf_token('delete_product_' ~ product.id) }}">
-                                <button type="submit" class="text-sm font-medium text-gray-400 transition hover:text-red-600">Supprimer</button>
+                                <button type="submit" class="cursor-pointer text-sm font-medium text-gray-400 transition hover:text-red-600">Supprimer</button>
                             </form>
                         </div>
                     </td>
