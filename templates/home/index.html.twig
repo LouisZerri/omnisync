@@ -1,6 +1,129 @@
-{% extends 'base.html.twig' %}
+{% extends 'layout/app.html.twig' %}
 
-{% block title %}OmniSync{% endblock %}
+{% block title %}Tableau de bord · OmniSync{% endblock %}
+{% block page_title %}Tableau de bord{% endblock %}
 
-{% block body %}
+{% block app_content %}
+    {# ───────── KPI ───────── #}
+    <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+        {# Produits #}
+        <div class="rounded-xl border border-gray-200 bg-white p-5">
+            <span class="flex h-10 w-10 items-center justify-center rounded-lg bg-brand/10 text-brand">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" /></svg>
+            </span>
+            <p class="mt-4 text-3xl font-semibold text-gray-900">{{ productCount }}</p>
+            <p class="mt-1 text-sm text-gray-500">Produits au catalogue</p>
+            {% if outOfStockCount > 0 %}
+                <p class="mt-3 text-xs font-medium text-red-600">{{ outOfStockCount }} en rupture</p>
+            {% else %}
+                <p class="mt-3 text-xs text-gray-400">Tous en stock</p>
+            {% endif %}
+        </div>
+
+        {# Valeur du catalogue #}
+        <div class="rounded-xl border border-gray-200 bg-white p-5">
+            <span class="flex h-10 w-10 items-center justify-center rounded-lg bg-emerald-50 text-emerald-600">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+            </span>
+            <p class="mt-4 text-3xl font-semibold text-gray-900">{{ (catalogueValueCents / 100)|number_format(0, ',', ' ') }} €</p>
+            <p class="mt-1 text-sm text-gray-500">Valeur du stock</p>
+            <p class="mt-3 text-xs text-gray-400">Prix × quantité, tous produits</p>
+        </div>
+
+        {# Taux de réussite #}
+        <div class="rounded-xl border border-gray-200 bg-white p-5">
+            <span class="flex h-10 w-10 items-center justify-center rounded-lg bg-sky-50 text-sky-600">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+            </span>
+            <p class="mt-4 text-3xl font-semibold text-gray-900">{{ successRate is null ? '—' : successRate ~ '%' }}</p>
+            <p class="mt-1 text-sm text-gray-500">Réussite des synchros</p>
+            <p class="mt-3 text-xs text-gray-400">{{ syncDone }} / {{ syncDone + syncFailed }} terminées</p>
+        </div>
+
+        {# Synchros en échec #}
+        <div class="rounded-xl border bg-white p-5 {{ syncFailed > 0 ? 'border-red-200' : 'border-gray-200' }}">
+            <span class="flex h-10 w-10 items-center justify-center rounded-lg {{ syncFailed > 0 ? 'bg-red-50 text-red-600' : 'bg-gray-100 text-gray-400' }}">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01M5.07 19h13.86c1.54 0 2.5-1.67 1.73-3L13.73 4a2 2 0 00-3.46 0L3.34 16c-.77 1.33.19 3 1.73 3z" /></svg>
+            </span>
+            <p class="mt-4 text-3xl font-semibold {{ syncFailed > 0 ? 'text-red-600' : 'text-gray-900' }}">{{ syncFailed }}</p>
+            <p class="mt-1 text-sm text-gray-500">Synchros en échec</p>
+            {% if syncFailed > 0 %}
+                <a href="{{ path('app_sync_index') }}" class="mt-3 inline-block text-xs font-medium text-red-600 hover:underline">À relancer →</a>
+            {% else %}
+                <p class="mt-3 text-xs text-gray-400">Rien à relancer</p>
+            {% endif %}
+        </div>
+    </div>
+
+    {# ───────── Activité + canaux ───────── #}
+    <div class="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-3">
+        {# Activité de synchronisation #}
+        <div class="overflow-hidden rounded-xl border border-gray-200 bg-white lg:col-span-2">
+            <div class="flex items-center justify-between border-b border-gray-100 px-6 py-4">
+                <h2 class="text-sm font-semibold text-gray-900">Activité de synchronisation</h2>
+                <a href="{{ path('app_sync_index') }}" class="text-xs font-medium text-brand hover:underline">Voir le journal →</a>
+            </div>
+            <ul id="dashboard-sync-rows" class="divide-y divide-gray-100">
+                {% for sync in recentSyncs %}
+                    {{ include('home/_sync_row.html.twig') }}
+                {% else %}
+                    <li class="px-6 py-12 text-center text-sm text-gray-500">Aucune synchronisation pour le moment.</li>
+                {% endfor %}
+            </ul>
+        </div>
+
+        {# Canaux #}
+        <div class="overflow-hidden rounded-xl border border-gray-200 bg-white">
+            <div class="flex items-center justify-between border-b border-gray-100 px-6 py-4">
+                <h2 class="text-sm font-semibold text-gray-900">Canaux</h2>
+                {% if is_granted('ROLE_ADMIN') %}
+                    <a href="{{ path('app_channel_index') }}" class="text-xs font-medium text-brand hover:underline">Gérer →</a>
+                {% endif %}
+            </div>
+            <ul class="divide-y divide-gray-100">
+                {% for channel in channels %}
+                    <li class="flex items-center justify-between px-6 py-3">
+                        <div class="min-w-0">
+                            <p class="truncate text-sm font-medium text-gray-900">{{ channel.name }}</p>
+                            <p class="font-mono text-xs text-gray-400">{{ channel.code }}</p>
+                        </div>
+                        {% if channel.isActive %}
+                            <span class="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-medium text-emerald-700"><span class="h-1.5 w-1.5 rounded-full bg-emerald-500"></span>Actif</span>
+                        {% else %}
+                            <span class="inline-flex items-center gap-1.5 rounded-full bg-gray-100 px-2.5 py-1 text-xs font-medium text-gray-500"><span class="h-1.5 w-1.5 rounded-full bg-gray-400"></span>Inactif</span>
+                        {% endif %}
+                    </li>
+                {% else %}
+                    <li class="px-6 py-12 text-center text-sm text-gray-500">Aucun canal configuré.</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+
+    {# ───────── Alertes de stock ───────── #}
+    <div class="mt-6 overflow-hidden rounded-xl border border-gray-200 bg-white">
+        <div class="flex items-center justify-between border-b border-gray-100 px-6 py-4">
+            <h2 class="text-sm font-semibold text-gray-900">Alertes de stock</h2>
+            <a href="{{ path('app_product_index') }}" class="text-xs font-medium text-brand hover:underline">Tous les produits →</a>
+        </div>
+        {% if lowStock is empty %}
+            <p class="px-6 py-12 text-center text-sm text-gray-500">Aucune alerte — tout le catalogue est suffisamment approvisionné.</p>
+        {% else %}
+            <ul class="divide-y divide-gray-100">
+                {% for product in lowStock %}
+                    <li class="flex items-center justify-between px-6 py-3">
+                        <div class="min-w-0">
+                            <a href="{{ path('app_product_edit', {id: product.id}) }}" class="truncate text-sm font-medium text-gray-900 hover:text-brand">{{ product.name }}</a>
+                            <p class="font-mono text-xs text-gray-400">{{ product.sku }}</p>
+                        </div>
+                        {% if product.stock == 0 %}
+                            <span class="inline-flex items-center gap-1.5 rounded-full bg-red-50 px-2.5 py-1 text-xs font-medium text-red-700"><span class="h-1.5 w-1.5 rounded-full bg-red-500"></span>Rupture</span>
+                        {% else %}
+                            <span class="inline-flex items-center rounded-full bg-amber-50 px-2.5 py-1 text-xs font-medium text-amber-700">{{ product.stock }} restant{{ product.stock > 1 ? 's' : '' }}</span>
+                        {% endif %}
+                    </li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    </div>
 {% endblock %}

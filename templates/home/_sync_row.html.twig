@@ -1,0 +1,15 @@
+{% set style = {
+    'pending': {'badge': 'bg-gray-100 text-gray-600', 'dot': 'bg-gray-400'},
+    'running': {'badge': 'bg-amber-50 text-amber-700', 'dot': 'bg-amber-500'},
+    'done':    {'badge': 'bg-emerald-50 text-emerald-700', 'dot': 'bg-emerald-500'},
+    'failed':  {'badge': 'bg-red-50 text-red-700', 'dot': 'bg-red-500'},
+}[sync.status.value] %}
+<li id="dashboard-sync-{{ sync.id }}" class="flex items-center gap-3 px-6 py-3">
+    <span class="h-2 w-2 flex-shrink-0 rounded-full {{ style.dot }}"></span>
+    <div class="min-w-0 flex-1">
+        <p class="truncate text-sm font-medium text-gray-900">{{ sync.product.name }}</p>
+        <p class="truncate text-xs text-gray-400"><span class="font-mono">{{ sync.product.sku }}</span> → {{ sync.channel.name }}</p>
+    </div>
+    <span class="inline-flex flex-shrink-0 items-center rounded-full px-2.5 py-1 text-xs font-medium {{ style.badge }}">{{ sync.status.label }}</span>
+    <time class="w-16 flex-shrink-0 text-right font-mono text-xs text-gray-400">{{ sync.updatedAt|date('H:i:s') }}</time>
+</li>

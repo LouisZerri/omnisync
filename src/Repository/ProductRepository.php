@@ -27,4 +27,55 @@ class ProductRepository extends ServiceEntityRepository
         return $this->createQueryBuilder('product')
             ->orderBy('product.id', 'DESC');
     }
+
+    /**
+     * Nombre total de produits au catalogue.
+     */
+    public function countAll(): int
+    {
+        return (int) $this->createQueryBuilder('product')
+            ->select('COUNT(product.id)')
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
+
+    /**
+     * Valeur du catalogue en centimes : somme de (prix × stock) sur tous les produits.
+     */
+    public function sumCatalogueValueCents(): int
+    {
+        return (int) $this->createQueryBuilder('product')
+            ->select('COALESCE(SUM(product.priceCents * product.stock), 0)')
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
+
+    /**
+     * Nombre de produits en rupture (stock à zéro).
+     */
+    public function countOutOfStock(): int
+    {
+        return (int) $this->createQueryBuilder('product')
+            ->select('COUNT(product.id)')
+            ->where('product.stock = 0')
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
+
+    /**
+     * Produits dont le stock est sous le seuil (rupture incluse), les plus bas d'abord.
+     *
+     * @return Product[]
+     */
+    public function findLowStock(int $threshold, int $limit): array
+    {
+        return $this->createQueryBuilder('product')
+            ->where('product.stock <= :threshold')
+            ->setParameter('threshold', $threshold)
+            ->orderBy('product.stock', 'ASC')
+            ->addOrderBy('product.name', 'ASC')
+            ->setMaxResults($limit)
+            ->getQuery()
+            ->getResult();
+    }
 }
