@@ -9,6 +9,10 @@ import FileInputController from './controllers/file_input_controller.js';
 // Active la protection CSRF stateless de Symfony (écouteurs globaux sur submit).
 import './controllers/csrf_protection_controller.js';
 
+// Enregistre l'élément <turbo-mercure-stream-source> (abonnement Mercure des Turbo Streams temps réel).
+// L'enregistrement manuel des contrôleurs court-circuite l'autoimport de controllers.json : on l'importe ici.
+import '@symfony/ux-turbo/dist/mercure_stream_source_element.js';
+
 const app = startStimulusApp();
 app.register('password-toggle', PasswordToggleController);
 app.register('password-strength', PasswordStrengthController);

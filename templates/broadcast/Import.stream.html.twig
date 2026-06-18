@@ -1,0 +1,16 @@
+{# Rendu par le Broadcaster d'ux-turbo à chaque création/màj/suppression d'un Import. #}
+{% block create %}
+    <turbo-stream action="prepend" target="import-rows">
+        <template>{{ include('import/_row.html.twig', {import: entity}) }}</template>
+    </turbo-stream>
+{% endblock %}
+
+{% block update %}
+    <turbo-stream action="replace" target="import-{{ id }}">
+        <template>{{ include('import/_row.html.twig', {import: entity}) }}</template>
+    </turbo-stream>
+{% endblock %}
+
+{% block remove %}
+    <turbo-stream action="remove" target="import-{{ id }}"></turbo-stream>
+{% endblock %}

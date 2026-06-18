@@ -8,11 +8,13 @@ use App\Enum\ImportStatus;
 use App\Repository\ImportRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\UX\Turbo\Attribute\Broadcast;
 
 /**
  * Suit un job d'import CSV traité de façon asynchrone (statut, compteurs, rapport d'erreurs).
  */
 #[ORM\Entity(repositoryClass: ImportRepository::class)]
+#[Broadcast]
 class Import
 {
     #[ORM\Id]

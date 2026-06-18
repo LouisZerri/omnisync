@@ -27,3 +27,11 @@ services:
   zelmark:
     ports:
       - "3003:3000"
+
+###> symfony/mercure-bundle ###
+  mercure:
+    # Port hôte fixe : l'URL du hub reste stable (http://127.0.0.1:1339), donc le worker
+    # lancé en `php bin/console` (sans injection d'env du CLI Symfony) la résout aussi via .env.local.
+    ports:
+      - "1339:80"
+###< symfony/mercure-bundle ###

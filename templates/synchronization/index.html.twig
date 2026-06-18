@@ -4,6 +4,9 @@
 {% block page_title %}Synchronisations{% endblock %}
 
 {% block app_content %}
+    {# Abonnement temps réel : les mises à jour des Synchronization arrivent en Turbo Stream via Mercure. #}
+    {{ turbo_stream_from('App\\Entity\\Synchronization') }}
+
     <p class="mb-6 text-sm text-gray-500">{{ pagination.getTotalItemCount }} synchronisation(s) au journal</p>
 
     <div class="overflow-hidden rounded-xl border border-gray-200 bg-white">
@@ -17,40 +20,9 @@
                 <th class="px-6 py-3 text-right">Détail</th>
             </tr>
             </thead>
-            <tbody class="divide-y divide-gray-100">
+            <tbody id="sync-rows" class="divide-y divide-gray-100">
             {% for sync in pagination %}
-                {% set style = {
-                    'pending': {'badge': 'bg-gray-100 text-gray-600', 'dot': 'bg-gray-400'},
-                    'running': {'badge': 'bg-amber-50 text-amber-700', 'dot': 'bg-amber-500'},
-                    'done':    {'badge': 'bg-emerald-50 text-emerald-700', 'dot': 'bg-emerald-500'},
-                    'failed':  {'badge': 'bg-red-50 text-red-700', 'dot': 'bg-red-500'},
-                }[sync.status.value] %}
-                <tr class="transition hover:bg-gray-50">
-                    <td class="px-6 py-4">
-                        <div class="font-medium text-gray-900">{{ sync.product.name }}</div>
-                        <div class="font-mono text-xs text-gray-400">{{ sync.product.sku }}</div>
-                    </td>
-                    <td class="px-6 py-4 text-gray-600">{{ sync.channel.name }}</td>
-                    <td class="px-6 py-4">
-                        <span class="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium {{ style.badge }}">
-                            <span class="h-1.5 w-1.5 rounded-full {{ style.dot }}"></span>{{ sync.status.label }}
-                        </span>
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap font-mono text-xs text-gray-500">{{ sync.updatedAt|date('d/m/Y H:i:s') }}</td>
-                    <td class="px-6 py-4">
-                        <div class="flex items-center justify-end gap-3">
-                            {% if sync.error %}
-                                <span class="block max-w-xs truncate text-xs text-red-500" title="{{ sync.error }}">{{ sync.error }}</span>
-                            {% endif %}
-                            {% if sync.status.value == 'failed' %}
-                                <form method="post" action="{{ path('app_sync_retry', {id: sync.id}) }}">
-                                    <input type="hidden" name="_token" value="{{ csrf_token('retry_sync_' ~ sync.id) }}">
-                                    <button type="submit" class="cursor-pointer whitespace-nowrap rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-xs font-medium text-gray-700 transition hover:bg-gray-50">Relancer</button>
-                                </form>
-                            {% endif %}
-                        </div>
-                    </td>
-                </tr>
+                {{ include('synchronization/_row.html.twig') }}
             {% else %}
                 <tr>
                     <td colspan="5" class="px-6 py-12 text-center text-sm text-gray-500">Aucune synchronisation pour le moment.</td>

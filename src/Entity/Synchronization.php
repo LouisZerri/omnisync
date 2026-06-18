@@ -8,11 +8,13 @@ use App\Enum\SyncStatus;
 use App\Repository\SynchronizationRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\UX\Turbo\Attribute\Broadcast;
 
 /**
  * Trace une tentative de synchronisation d'un produit vers un canal (le journal de synchro).
  */
 #[ORM\Entity(repositoryClass: SynchronizationRepository::class)]
+#[Broadcast]
 class Synchronization
 {
     #[ORM\Id]

@@ -1,0 +1,16 @@
+{# Rendu par le Broadcaster d'ux-turbo à chaque création/màj/suppression d'une Synchronization. #}
+{% block create %}
+    <turbo-stream action="prepend" target="sync-rows">
+        <template>{{ include('synchronization/_row.html.twig', {sync: entity}) }}</template>
+    </turbo-stream>
+{% endblock %}
+
+{% block update %}
+    <turbo-stream action="replace" target="sync-{{ id }}">
+        <template>{{ include('synchronization/_row.html.twig', {sync: entity}) }}</template>
+    </turbo-stream>
+{% endblock %}
+
+{% block remove %}
+    <turbo-stream action="remove" target="sync-{{ id }}"></turbo-stream>
+{% endblock %}
