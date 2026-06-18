@@ -4,6 +4,9 @@
 {% block page_title %}Tableau de bord{% endblock %}
 
 {% block app_content %}
+    {# Abonnement temps réel : l'activité de synchronisation se met à jour via Mercure. #}
+    {{ turbo_stream_from('App\\Entity\\Synchronization') }}
+
     {# ───────── KPI ───────── #}
     <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
         {# Produits #}

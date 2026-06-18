@@ -1,9 +1,11 @@
 {% extends 'base.html.twig' %}
 
 {% block body %}
-    <div class="flex min-h-screen bg-gray-50">
-        {# Barre latérale de navigation #}
-        <aside class="sticky top-0 flex h-screen w-60 flex-col self-start border-r border-gray-200 bg-white">
+    {# La page défile normalement (scrollbar du navigateur) ; la barre latérale est en
+       position fixe pour rester visible pendant le scroll. #}
+    <div class="min-h-screen bg-gray-50">
+        {# Barre latérale de navigation (fixe) #}
+        <aside class="fixed inset-y-0 left-0 z-10 flex w-60 flex-col border-r border-gray-200 bg-white">
             <div class="flex h-16 items-center gap-2 border-b border-gray-200 px-6">
                 <span class="flex h-8 w-8 items-center justify-center rounded-lg bg-brand">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>
@@ -11,7 +13,7 @@
                 <span class="text-lg font-semibold text-gray-900">OmniSync</span>
             </div>
 
-            <nav class="flex-1 space-y-1 px-3 py-4">
+            <nav class="flex-1 space-y-1 overflow-y-auto px-3 py-4">
                 {{ _self.nav_item('app_home', 'Tableau de bord', app.request.attributes.get('_route') starts with 'app_home') }}
                 {{ _self.nav_item('app_product_index', 'Produits', app.request.attributes.get('_route') starts with 'app_product') }}
                 {{ _self.nav_item('app_import_index', 'Imports', app.request.attributes.get('_route') starts with 'app_import') }}
@@ -22,8 +24,8 @@
             </nav>
         </aside>
 
-        {# Zone principale #}
-        <div class="flex flex-1 flex-col">
+        {# Zone principale (décalée de la largeur de la sidebar fixe) #}
+        <div class="ml-60 flex min-h-screen flex-col">
             {# Barre du haut #}
             <header class="flex h-16 items-center justify-between border-b border-gray-200 bg-white px-8">
                 <h1 class="text-lg font-medium text-gray-900">{% block page_title %}{% endblock %}</h1>

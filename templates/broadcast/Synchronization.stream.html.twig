@@ -1,7 +1,13 @@
-{# Rendu par le Broadcaster d'ux-turbo à chaque création/màj/suppression d'une Synchronization. #}
+{# Rendu par le Broadcaster d'ux-turbo à chaque création/màj/suppression d'une Synchronization.
+   Chaque action pousse deux Turbo Streams : un pour le journal complet (sync-*) et un pour
+   l'activité du tableau de bord (dashboard-sync-*). Une cible absente de la page est ignorée
+   par Turbo, donc chaque page n'applique que ce qui la concerne. #}
 {% block create %}
     <turbo-stream action="prepend" target="sync-rows">
         <template>{{ include('synchronization/_row.html.twig', {sync: entity}) }}</template>
+    </turbo-stream>
+    <turbo-stream action="prepend" target="dashboard-sync-rows">
+        <template>{{ include('home/_sync_row.html.twig', {sync: entity}) }}</template>
     </turbo-stream>
 {% endblock %}
 
@@ -9,8 +15,12 @@
     <turbo-stream action="replace" target="sync-{{ id }}">
         <template>{{ include('synchronization/_row.html.twig', {sync: entity}) }}</template>
     </turbo-stream>
+    <turbo-stream action="replace" target="dashboard-sync-{{ id }}">
+        <template>{{ include('home/_sync_row.html.twig', {sync: entity}) }}</template>
+    </turbo-stream>
 {% endblock %}
 
 {% block remove %}
     <turbo-stream action="remove" target="sync-{{ id }}"></turbo-stream>
+    <turbo-stream action="remove" target="dashboard-sync-{{ id }}"></turbo-stream>
 {% endblock %}
