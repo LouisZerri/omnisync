@@ -9,9 +9,7 @@ use App\Channel\Exception\ChannelException;
 use App\Entity\Channel;
 
 /**
- * Abstraction d'un canal de vente. OmniSync dépend de cette interface, jamais d'une
- * implémentation concrète : brancher un vrai marketplace plus tard = une nouvelle impl,
- * sans toucher au reste (inversion de dépendances).
+ * Abstraction d'un canal de vente
  */
 interface ChannelConnector
 {

@@ -14,7 +14,7 @@ use Symfony\Contracts\HttpClient\ResponseInterface;
 
 /**
  * Implémentation HTTP générique du connecteur : tous les canaux étant servis par le même
- * microservice marketplace (en plusieurs instances), une seule impl paramétrée par la
+ * microservice marketplace (en plusieurs instances), une seule implémentation paramétrée par la
  * configuration du Channel suffit.
  */
 class HttpChannelConnector implements ChannelConnector
