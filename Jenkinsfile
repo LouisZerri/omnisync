@@ -1,10 +1,11 @@
-// Pipeline de déploiement continu d'OmniSync.
+// Pipeline CI/CD d'OmniSync, déclenché sur la branche master (= mise en production).
 //
-// Jenkins tourne sur un VPS distinct (sans Docker) : il ne construit pas l'image lui-même,
-// il se connecte en SSH au VPS de production (qui a Docker) et y déclenche le déploiement.
-// Déclenché sur la branche master (= mise en production).
+// Étapes : qualité (PHPStan + php-cs-fixer) → tests (PHPUnit) → déploiement.
+// La qualité et les tests tournent sur le serveur Jenkins ; le déploiement se fait par SSH
+// vers le VPS de prod (qui a Docker), car Jenkins tourne sur un VPS distinct sans Docker.
 //
-// Pré-requis : la clé SSH de l'utilisateur "jenkins" (~jenkins/.ssh/id_ed25519) doit être
+// Pré-requis sur le serveur Jenkins : PHP 8.4 (+ extensions, dont pdo_sqlite pour les tests)
+// et Composer. Et la clé SSH de l'utilisateur "jenkins" (~jenkins/.ssh/id_ed25519) doit être
 // autorisée sur le VPS de prod (dans ~/.ssh/authorized_keys de l'utilisateur de déploiement).
 
 pipeline {
@@ -25,6 +26,25 @@ pipeline {
         stage('Checkout') {
             steps {
                 checkout scm
+            }
+        }
+
+        stage('Installation') {
+            steps {
+                sh 'composer install --no-interaction --no-progress --prefer-dist --no-scripts'
+            }
+        }
+
+        stage('Qualité') {
+            steps {
+                sh 'vendor/bin/phpstan analyse --no-progress'
+                sh 'vendor/bin/php-cs-fixer fix --dry-run --diff'
+            }
+        }
+
+        stage('Tests') {
+            steps {
+                sh 'php bin/phpunit'
             }
         }
 
