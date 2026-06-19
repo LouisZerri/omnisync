@@ -1,0 +1,31 @@
+# Versionnement / IDE
+**/.git
+**/.gitignore
+**/.gitattributes
+/.idea
+/.vscode
+
+# Dépendances et artefacts reconstruits dans l'image
+/vendor/
+/node_modules/
+/var/
+/public/build/
+/public/uploads/
+
+# Environnements locaux et secrets
+/.env.local
+/.env.*.local
+
+# Orchestration / outillage non nécessaire à l'image applicative
+/Dockerfile
+/.dockerignore
+/compose.yaml
+/compose.override.yaml
+/compose.prod.yaml
+/.php-cs-fixer.dist.php
+/.php-cs-fixer.cache
+/phpstan.dist.neon
+/tests/
+
+# Microservice marketplace : image Node distincte
+/marketplace-service/
