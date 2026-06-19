@@ -44,7 +44,9 @@ pipeline {
 
         stage('Tests') {
             steps {
-                sh 'php bin/phpunit'
+                // Le workspace Jenkins est réutilisé entre builds : on repart d'un cache de test
+                // propre, sinon un conteneur compilé périmé peut ignorer un nouveau fichier de config.
+                sh 'rm -rf var/cache/test && php bin/phpunit'
             }
         }
 
