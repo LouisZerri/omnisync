@@ -8,6 +8,14 @@ framework:
     #esi: true
     #fragments: true
 
+when@prod:
+    framework:
+        # L'app FrankenPHP tourne derrière Apache (reverse proxy local qui termine le TLS).
+        # On fait confiance au proxy direct (REMOTE_ADDR) pour lire les en-têtes X-Forwarded-*,
+        # sinon Symfony croit que les requêtes sont en HTTP (mauvaises URLs, cookie Mercure cassé).
+        trusted_proxies: '127.0.0.1,REMOTE_ADDR'
+        trusted_headers: ['x-forwarded-for', 'x-forwarded-host', 'x-forwarded-proto', 'x-forwarded-port']
+
 when@test:
     framework:
         test: true
