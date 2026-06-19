@@ -8,7 +8,7 @@
 
         {# Colonne du formulaire #}
         <div class="flex w-full flex-col justify-center px-6 py-12 lg:w-3/5 lg:px-16">
-            <div class="mx-auto w-full max-w-xl">
+            <div class="mx-auto w-full max-w-xl" data-controller="demo-login">
                 {% include 'layout/_brand_logo_mobile.html.twig' %}
 
                 <h1 class="text-3xl font-bold text-gray-900">Connexion</h1>
@@ -24,6 +24,7 @@
                     <div>
                         <label for="email" class="mb-1.5 block text-sm font-medium text-gray-700">Adresse e-mail</label>
                         <input type="email" value="{{ last_username }}" name="_username" id="email"
+                               data-demo-login-target="email"
                                class="block w-full rounded-lg border border-gray-300 px-4 py-3 text-base text-gray-900 placeholder-gray-400 focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand"
                                placeholder="vous@entreprise.com" autocomplete="email" required autofocus>
                     </div>
@@ -35,6 +36,7 @@
                         <div class="relative" data-controller="password-toggle">
                             <input type="password" name="_password" id="password"
                                    data-password-toggle-target="input"
+                                   data-demo-login-target="password"
                                    class="block w-full rounded-lg border border-gray-300 px-4 py-3 pr-11 text-base text-gray-900 focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand"
                                    autocomplete="current-password" required>
                             <button type="button" data-action="password-toggle#toggle" tabindex="-1"
@@ -53,6 +55,32 @@
                         Se connecter
                     </button>
                 </form>
+
+                {# Comptes de démonstration : clic pour pré-remplir, puis « Se connecter ». #}
+                <div class="mt-8 rounded-xl border border-gray-200 bg-gray-50 p-5">
+                    <p class="text-sm font-medium text-gray-700">Comptes de démonstration</p>
+                    <p class="mt-1 text-xs text-gray-500">Cliquez sur un compte pour pré-remplir le formulaire (mot de passe : <span class="font-mono">password</span>), puis « Se connecter ».</p>
+                    <div class="mt-4 grid gap-3 sm:grid-cols-2">
+                        <button type="button"
+                                data-action="demo-login#fill"
+                                data-demo-login-email-param="admin@omnisync.test"
+                                data-demo-login-password-param="password"
+                                class="cursor-pointer rounded-lg border border-gray-200 bg-white p-3 text-left transition hover:border-brand hover:bg-brand/5">
+                            <span class="inline-flex items-center rounded-full bg-brand/10 px-2 py-0.5 text-xs font-medium text-brand">Administratrice</span>
+                            <p class="mt-2 text-sm font-medium text-gray-900">Alice Admin</p>
+                            <p class="font-mono text-xs text-gray-400">admin@omnisync.test</p>
+                        </button>
+                        <button type="button"
+                                data-action="demo-login#fill"
+                                data-demo-login-email-param="manager@omnisync.test"
+                                data-demo-login-password-param="password"
+                                class="cursor-pointer rounded-lg border border-gray-200 bg-white p-3 text-left transition hover:border-brand hover:bg-brand/5">
+                            <span class="inline-flex items-center rounded-full bg-sky-50 px-2 py-0.5 text-xs font-medium text-sky-700">Gestionnaire</span>
+                            <p class="mt-2 text-sm font-medium text-gray-900">Marc Gestionnaire</p>
+                            <p class="font-mono text-xs text-gray-400">manager@omnisync.test</p>
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
