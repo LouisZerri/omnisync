@@ -1,0 +1,8 @@
+# En test, aucun broker : on route les messages vers le transport in-memory.
+# Ainsi, le dispatch déclenché par le subscriber de synchro (au flush d'un produit)
+# ne tente pas de se connecter à RabbitMQ.
+framework:
+    messenger:
+        transports:
+            async: 'in-memory://'
+            failed: 'in-memory://'
