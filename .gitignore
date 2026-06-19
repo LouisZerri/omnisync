@@ -31,3 +31,6 @@ phpstan.neon
 
 # JetBrains IDE
 /.idea/
+
+# Secrets de production (jamais commités)
+.env.prod

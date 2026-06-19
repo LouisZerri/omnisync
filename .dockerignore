@@ -29,3 +29,6 @@
 
 # Microservice marketplace : image Node distincte
 /marketplace-service/
+
+# Secrets de prod (passés au runtime, jamais dans l'image)
+/.env.prod
