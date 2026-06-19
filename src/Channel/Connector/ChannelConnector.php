@@ -9,7 +9,7 @@ use App\Channel\Exception\ChannelException;
 use App\Entity\Channel;
 
 /**
- * Abstraction d'un canal de vente
+ * Abstraction d'un canal de vente.
  */
 interface ChannelConnector
 {
