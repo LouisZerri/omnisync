@@ -17,7 +17,7 @@ final class HomeController extends AbstractController
     /** Seuil d'alerte de stock faible (rupture incluse). */
     private const LOW_STOCK_THRESHOLD = 5;
 
-    #[Route('/', name: 'app_home')]
+    #[Route('/tableau-de-bord', name: 'app_home')]
     public function index(
         ProductRepository $products,
         SynchronizationRepository $synchronizations,

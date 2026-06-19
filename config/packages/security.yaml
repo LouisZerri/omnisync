@@ -26,6 +26,8 @@ security:
                 login_path: app_login
                 check_path: app_login
                 enable_csrf: true
+                # Après connexion, on arrive sur le tableau de bord (et non la landing publique)
+                default_target_path: app_home
             logout:
                 path: app_logout
                 # where to redirect after logout
@@ -41,6 +43,7 @@ security:
     access_control:
         - { path: ^/login, roles: PUBLIC_ACCESS }
         - { path: ^/reset-password, roles: PUBLIC_ACCESS }
+        - { path: ^/$, roles: PUBLIC_ACCESS }   # landing publique (racine exacte)
         - { path: ^/, roles: ROLE_USER }
 
 when@test:

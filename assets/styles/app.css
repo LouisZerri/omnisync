@@ -5,3 +5,9 @@
     --color-brand: #26215c;
     --color-brand-light: #afa9ec;
 }
+
+/* Scrollbar fine et discrète (le « trait » par défaut du navigateur devient subtil). */
+html {
+    scrollbar-width: thin;
+    scrollbar-color: #c7c9d9 transparent;
+}
