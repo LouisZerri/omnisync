@@ -1,0 +1,5 @@
+# En test, aucun hub Mercure : on désactive la diffusion Turbo pour que le flush
+# des entités #[Broadcast] (Synchronization, Import) ne tente pas de publier.
+turbo:
+    broadcast:
+        enabled: false

@@ -1,0 +1,6 @@
+# En test : base SQLite sur fichier (aucun service externe, idéal en CI).
+# Le schéma est (re)créé à partir du mapping des entités par les tests d'intégration.
+doctrine:
+    dbal:
+        url: 'sqlite:///%kernel.project_dir%/var/test.db'
+        dbname_suffix: ''
